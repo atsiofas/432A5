@@ -1,0 +1,32 @@
+---
+title: "Analysis"
+author: "Alex Tsiofas"
+date: "11/02/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+seq <- read.csv("Sequences.csv")
+
+seq <- seq %>%  select(x) %>% mutate(A_num = NA, G_num = NA, T_num = NA, C_num = NA)
+
+for (i in 1:length(seq$x)) {
+  seq$x[i] <- sub(">.*sequence", "", seq$x[i])
+  seq$x[i] <- gsub("\\n", "", seq$x[i])
+  seq$A_num[i] <- nchar(gsub("[GTC]", "", seq$x[i]))
+  seq$G_num[i] <- nchar(gsub("[ATC]", "", seq$x[i]))
+  seq$T_num[i] <- nchar(gsub("[GAC]", "", seq$x[i]))
+  seq$C_num[i] <- nchar(gsub("[ATG]", "", seq$x[i]))
+}
+
+print(cat(paste("Sequence 1: Borrelia burgdorferi strain QLZP1", seq$x[1], 
+            "Sequence 2: Borrelia burgdorferi strain CS4", seq$x[2], 
+            "Sequence 3: Borrelia burgdorferi strain GL18", seq$x[3], sep = '\n')))
+```
+
+
