@@ -17,9 +17,8 @@ Sequences<-unlist(Sequences)
 header<-gsub("(^>.*sequence)\\n[ATCG].*","\\1",Sequences)
 #defining the sequence
 seq<-gsub("^>.*sequence\\n([ATCG].*)","\\1",Sequences)
-#creating a dataframe with separate name and sequence columns
+#creating a data frame with separate name and sequence columns
 Sequences<-data.frame(Name=header,Sequence=seq)
 
-Sequences <- gsub("\\n", "", Sequences)
-
+#exporting the data frame
 write.csv(Sequences, "Sequences.csv")
