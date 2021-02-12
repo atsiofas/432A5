@@ -11,20 +11,28 @@ knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 ```
 
+## Importing the Dataset, Initiating new columns
 ```{r}
+#import the dataset
 seq_df <- read.csv("Sequences.csv")
 
-#eliminating the extra column, adding 4 new columns for the A, G, C. T counts
-seq_df <- seq_df %>%  select(Name, Sequence) %>% mutate(seq = Sequence, A_num = NA, G_num = NA, T_num = NA, C_num = NA, GC_content = NA)
+#eliminating the extra column, adding new columns for the A, G, C. T counts, GC content calculation
+#encountered a problem with using the column name 'Sequence' because R recognized it as a keyword/function, made an identical column with the name seq to remedy these problems
+seq_df <- seq_df %>% mutate(seq = Sequence, A_num = NA, G_num = NA, T_num = NA, C_num = NA, GC_content = NA) %>% select(Name, seq, A_num, G_num, T_num, C_num)
 
+#for loop that loops through each sequence to fill in A. G , C, T, counts
 for (i in 1:length(seq_df$seq)) {
-  seq_df$seq[i] <- gsub("\\n", "", seq_df$seq[i])
-  seq_df$A_num[i] <- nchar(gsub("[GTC]", "", seq_df$seq[i]))
-  seq_df$G_num[i] <- nchar(gsub("[ATC]", "", seq_df$seq[i]))
+  seq_df$seq[i] <- gsub("\\n", "", seq_df$seq[i]) #removing newline characters
+  #finding the length of a string with only the letter of interest, all other letters removed
+  #number of characters in a string with just A = the number of A's in the sequence
+  #repeated for each letter
+  seq_df$A_num[i] <- nchar(gsub("[GTC]", "", seq_df$seq[i])) 
+  seq_df$G_num[i] <- nchar(gsub("[ATC]", "", seq_df$seq[i])) 
   seq_df$T_num[i] <- nchar(gsub("[GAC]", "", seq_df$seq[i]))
   seq_df$C_num[i] <- nchar(gsub("[ATG]", "", seq_df$seq[i]))
 }
 
+#printing the sequences out
 print(cat(paste("Sequence 1: Borrelia burgdorferi strain QLZP1", seq_df$seq[1], 
             "Sequence 2: Borrelia burgdorferi strain CS4", seq_df$seq[2], 
             "Sequence 3: Borrelia burgdorferi strain GL18", seq_df$seq[3], sep = '\n')))
@@ -37,7 +45,7 @@ Sequence           | Number of A       | Number of G       | Number of T       |
 
 [![Scanning Electron micrograph of Borrelia burgdorferi by Science Source](https://images.fineartamerica.com/images-medium-large/1-borrelia-burgdorferi-science-source.jpg)]
 
-[Borrelia burgdorferi Wikipedia Page] (https://en.wikipedia.org/wiki/Borrelia_burgdorferi)
+[Borrelia burgdorferi Wikipedia Page](https://en.wikipedia.org/wiki/Borrelia_burgdorferi)
 ```{r}
 #calculating percent GC content of each sequence by dividing the sum of G+C by the total number of bps in the sequence
 for (i in 1:length(seq_df$Sequence)) {
@@ -49,3 +57,4 @@ Sequence ID       | Percent GC
 `r seq_df$Name[1]`|`r seq_df$GC_content[1]`  
 `r seq_df$Name[2]`|`r seq_df$GC_content[2]`  
 `r seq_df$Name[3]`|`r seq_df$GC_content[3]`  
+
